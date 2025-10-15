@@ -34,6 +34,10 @@ def stock_market():
         op_kwargs={'url': '{{ ti.xcom_pull(task_ids="is_api_available") }}','symbol': SYMBOL},
     )
 
+    store_prices = PythonOperator(
+        task_id='store_prices',
+        pythonc_callable=_store_prices
+
     is_api_available() >> get_stock_prices
         
 

@@ -1,45 +1,151 @@
-Overview
-========
+# Airflow & Spark Integration for Data Pipelines
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+## Présentation générale
 
-Project Contents
-================
+Ce projet vise à orchestrer et exécuter des pipelines de données distribués dans un environnement sécurisé Sanofi. Il combine **Apache Airflow** pour l’orchestration, **Apache Spark** pour le traitement distribué, **Metabase** pour la visualisation, et **MinIO** pour le stockage objet compatible S3. Le déploiement et la gestion locale s’appuient sur **Astro CLI (Astronomer)**, le tout packagé avec **Docker** et **docker-compose**, optimisé pour macOS via **Colima**.
 
-Your Astro project contains the following files and folders:
+---
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+## Stack technique
 
-Deploy Your Project Locally
-===========================
+- **Apache Airflow** : Orchestration des workflows et gestion des DAGs.
+- **Apache Spark** : Traitement distribué des données.
+- **Metabase** : Visualisation et exploration des données.
+- **MinIO** : Stockage objet compatible S3, utilisé pour les échanges de fichiers.
+- **Astro CLI** : Gestion locale et déploiement des environnements Airflow.
+- **Docker & docker-compose** : Conteneurisation et orchestration des services.
+- **Colima** : Moteur de virtualisation pour Docker sur macOS.
+- **Certificats Sanofi (.pem)** : Sécurisation des communications et conformité.
 
-Start Airflow on your local machine by running 'astro dev start'.
+---
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
+## Installation et configuration locale
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+### Prérequis
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+- macOS (recommandé)
+- [Colima](https://github.com/abiosoft/colima)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Astro CLI](https://docs.astronomer.io/astro/cli/install-cli)
+- Certificats Sanofi : `SanofiRootCA.pem`, `SanofiTechnicalCA.pem`
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+### Étapes
 
-Deploy Your Project to Astronomer
-=================================
+1. **Installer Colima et Docker Desktop**
+    ```bash
+    brew install colima
+    colima start
+    ```
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+2. **Installer Astro CLI**
+    ```bash
+    curl -sSL https://install.astronomer.io | sudo bash
+    ```
 
-Contact
-=======
+3. **Cloner le projet**
+    ```bash
+    git clone <repo-url>
+    cd airflow-spark-integration
+    ```
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+4. **Placer les certificats Sanofi dans le dossier `certs/`**
+    ```
+    certs/SanofiRootCA.pem
+    certs/SanofiTechnicalCA.pem
+    ```
+
+5. **Construire et démarrer les services**
+    ```bash
+    astro dev start
+    ```
+
+6. **Accéder aux interfaces**
+    - Airflow : http://localhost:8080
+    - Metabase : http://localhost:3000
+    - MinIO : http://localhost:9000
+
+---
+
+## Structure du projet
+
+```
+airflow-spark-integration/
+├── dags/
+│   └── stock_market.py
+├── plugins/
+├── docker-compose.yml
+├── Dockerfile
+├── certs/
+│   ├── SanofiRootCA.pem
+│   └── SanofiTechnicalCA.pem
+├── .gitignore
+├── README.md
+└── ...
+```
+
+---
+
+## Fonctionnement du pipeline
+
+### Exemple : `stock_market.py`
+
+- **Source** : Extraction des données de marché depuis une API sécurisée.
+- **Traitement** : Spark nettoie et agrège les données.
+- **Stockage** : Les résultats sont déposés sur MinIO.
+- **Visualisation** : Metabase interroge MinIO pour afficher les tableaux de bord.
+- **Orchestration** : Airflow gère la planification et le suivi du pipeline.
+
+---
+
+## Commandes principales
+
+- **Build des images Docker**
+  ```bash
+  astro dev build
+  ```
+- **Démarrer les services**
+  ```bash
+  astro dev start
+  ```
+- **Arrêter les services**
+  ```bash
+  astro dev stop
+  ```
+- **Afficher les logs**
+  ```bash
+  astro dev logs
+  ```
+- **Accéder au shell Airflow**
+  ```bash
+  astro dev bash
+  ```
+
+---
+
+## Dépannage
+
+- **Erreurs SSL** : Vérifiez la présence et le chemin des certificats `.pem` dans `certs/`.
+- **Conflits de ports** : Modifiez les ports dans `docker-compose.yml` si nécessaires.
+- **Certificats manquants** : Téléchargez les certificats Sanofi requis ou contactez l’administrateur.
+
+---
+
+## Sécurité et conformité
+
+- **Certificats Sanofi** : Obligatoires pour toute connexion sécurisée.
+- **.gitignore** : Les fichiers sensibles (`certs/*.pem`, credentials, etc.) sont ignorés par défaut.
+- **Conformité** : Respect des politiques internes Sanofi pour le stockage et le transfert des données.
+
+---
+
+## Contributeurs
+
+- Amine M'ZALI
+
+---
+
+## Licence
+
+Ce projet est sous licence MIT, sauf mention contraire dans des fichiers spécifiques.
+
+---

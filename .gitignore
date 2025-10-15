@@ -1,0 +1,106 @@
+.git
+.env
+.DS_Store
+airflow_settings.yaml
+__pycache__/
+astro
+.venv
+airflow-webserver.pid
+webserver_config.py
+airflow.cfg
+airflow.db
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.eggs/
+*.pytest_cache/
+*.coverage
+.coverage.*
+
+# Virtual environments
+.env
+.venv
+venv/
+env/
+
+# Logs & temp files
+logs/
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Airflow local metadata
+airflow.db
+unittests.db
+airflow_settings.yaml
+*.sqlite3
+**/airflow_settings.yaml
+
+# Astro local state
+.astro/
+**/.astro/
+
+# Docker-related
+**/.docker/
+.dockerignore
+**/Dockerfile~
+docker-compose.override.yml~
+*.pid
+**/tmp/
+**/output/
+**/build/
+
+# Spark / Hadoop intermediates
+spark-warehouse/
+derby.log
+metastore_db/
+*.crc
+
+# Certificates & private keys 
+*.pem
+*.crt
+*.key
+certs/
+**/sanofi-bundle.pem
+**/sanofi-bundle.crt
+
+# Data folders
+include/data/
+**/data/
+uploads/
+downloads/
+*.csv
+*.parquet
+*.json
+
+# Notebooks and checkpoints
+*.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# IDE & OS specific
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Tests & artifacts
+**/__pycache__/
+**/tests/__pycache__/
+.coverage
+.pytest_cache/
+htmlcov/
+junit.xml
+
+# Compiled bytecode or build outputs
+*.out
+*.so
+*.a
+*.o
+*.class
+target/
+dist/
+build/

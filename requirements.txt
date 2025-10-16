@@ -1,2 +1,3 @@
 minio
 requests
+apache-airflow-providers-docker==4.0.0
